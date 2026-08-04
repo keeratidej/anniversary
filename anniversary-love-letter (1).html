@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สุขสันต์วันครบรอบของฟ้าใส 💌</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Itim&family=Mali:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink-plum: #2B1B2E;
+    --plum-deep: #180F1A;
+    --parchment: #FBF1E4;
+    --parchment-dim: #F1E4D0;
+    --blush: #E8A0B4;
+    --gold: #D9A55C;
+    --gold-soft: #F0C98A;
+    --charcoal: #4A3B4D;
+    --cream-text: #F6ECE0;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html, body{
+    margin:0; padding:0; width:100%; min-height:100%;
+    background: radial-gradient(ellipse at 30% -10%, #3a2440 0%, var(--ink-plum) 45%, var(--plum-deep) 100%);
+    background-attachment: fixed;
+    color: var(--cream-text);
+    font-family: 'Mali', cursive;
+    overflow-x: hidden;
+  }
+
+  body::before{
+    content:"";
+    position: fixed; inset:0;
+    background-image: radial-gradient(rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size: 26px 26px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .screen{
+    position: relative;
+    min-height: 100vh;
+    width: 100%;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1;
+  }
+  .screen.active{ display: flex; }
+
+  /* ---------- Wax seal monogram (signature element) ---------- */
+  .seal{
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 32% 28%, var(--gold-soft), var(--gold) 55%, #b3803c 100%);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.45), inset 0 -3px 6px rgba(0,0,0,0.25), inset 0 2px 3px rgba(255,255,255,0.35);
+    font-family: 'Itim', cursive;
+    font-size: 1.1rem;
+    color: #3a2410;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+  }
+  .seal span{ font-size: 0.85rem; }
+
+  /* ================= SCREEN 1 — CORKBOARD ================= */
+  #screen1{ padding: 32px 16px 60px; }
+
+  .board-header{
+    display: flex; flex-direction: column; align-items: center;
+    gap: 10px; text-align: center; margin-bottom: 8px;
+  }
+  .board-header h1{
+    font-family: 'Itim', cursive;
+    font-weight: 700;
+    font-size: clamp(2rem, 6vw, 3.2rem);
+    color: var(--gold-soft);
+    margin: 6px 0 0;
+    text-shadow: 0 2px 12px rgba(217,165,92,0.25);
+  }
+  .board-header p{
+    font-weight: 300; font-size: 0.92rem;
+    color: rgba(246,236,224,0.7);
+    margin: 0;
+    max-width: 340px;
+  }
+
+  #board{
+    position: relative;
+    width: 100%;
+    max-width: 980px;
+    height: 62vh;
+    min-height: 420px;
+    margin-top: 18px;
+  }
+
+  .note{
+    position: absolute;
+    padding: 14px 20px;
+    border-radius: 3px;
+    font-family: 'Mali', cursive;
+    font-weight: 700;
+    font-size: 1.15rem;
+    cursor: pointer;
+    user-select: none;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.35);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.5s ease;
+    border: none;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .note:hover{ transform: translateY(-3px) scale(1.05) rotate(var(--r)); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
+  .note:focus-visible{ outline: 2px solid var(--gold-soft); outline-offset: 3px; }
+  .note::before{
+    content:"";
+    position: absolute; top: -8px; left: 50%; transform: translateX(-50%) rotate(-4deg);
+    width: 34px; height: 14px;
+    background: rgba(232,160,180,0.55);
+    border: 1px solid rgba(255,255,255,0.25);
+  }
+  .note.c1{ background: var(--parchment); color: var(--charcoal); }
+  .note.c2{ background: var(--blush); color: #3a1520; }
+  .note.c3{ background: var(--gold-soft); color: #3a2410; }
+
+  .note.wrong-shake{ animation: shake 0.4s ease; }
+  @keyframes shake{
+    10%,90%{ transform: translateX(-2px) rotate(var(--r)); }
+    20%,80%{ transform: translateX(4px) rotate(var(--r)); }
+    30%,50%,70%{ transform: translateX(-7px) rotate(var(--r)); }
+    40%,60%{ transform: translateX(7px) rotate(var(--r)); }
+  }
+
+  .note.correct{
+    box-shadow: 0 0 0 3px var(--gold), 0 0 22px 6px rgba(217,165,92,0.55);
+    animation: pulse-gold 0.9s ease;
+  }
+  @keyframes pulse-gold{
+    0%{ transform: scale(1) rotate(var(--r)); }
+    40%{ transform: scale(1.18) rotate(0deg); }
+    100%{ transform: scale(1.08) rotate(0deg); }
+  }
+  .note.fade-out{ opacity: 0; transform: translateY(10px) scale(0.9); pointer-events: none; }
+
+  #hint{
+    min-height: 1.4em;
+    font-size: 0.9rem;
+    color: var(--blush);
+    margin-top: 4px;
+    text-align: center;
+  }
+
+  /* ================= REVEAL PANEL (over screen 1) ================= */
+  .letter-veil{
+    position: fixed; inset: 0;
+    background: rgba(24,15,26,0.72);
+    display: none;
+    align-items: center; justify-content: center;
+    z-index: 20;
+    padding: 20px;
+    animation: fadeIn 0.4s ease;
+  }
+  .letter-veil.active{ display: flex; }
+  @keyframes fadeIn{ from{ opacity:0; } to{ opacity:1; } }
+
+  .letter-card{
+    background: var(--parchment);
+    color: var(--charcoal);
+    max-width: 420px;
+    width: 100%;
+    padding: 40px 30px 32px;
+    border-radius: 4px;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    transform: rotate(-1deg);
+    animation: popIn 0.5s cubic-bezier(.2,.9,.3,1.2);
+  }
+  @keyframes popIn{
+    from{ opacity:0; transform: translateY(24px) rotate(-1deg) scale(0.92); }
+    to{ opacity:1; transform: translateY(0) rotate(-1deg) scale(1); }
+  }
+  .letter-card .seal{ position: absolute; top: -22px; left: 50%; transform: translateX(-50%); }
+  .letter-card p{
+    font-family: 'Itim', cursive;
+    font-size: clamp(1.5rem, 5vw, 1.9rem);
+    line-height: 1.5;
+    text-align: center;
+    margin: 18px 0 26px;
+    color: #3a2635;
+  }
+
+  .btn{
+    font-family: 'Mali', cursive;
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 13px 28px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  }
+  .btn:active{ transform: scale(0.96); }
+  .btn-gold{
+    background: linear-gradient(135deg, var(--gold-soft), var(--gold));
+    color: #3a2410;
+    box-shadow: 0 6px 16px rgba(217,165,92,0.4);
+    display: block; margin: 0 auto;
+  }
+  .btn-gold:hover{ box-shadow: 0 8px 20px rgba(217,165,92,0.55); transform: translateY(-2px); }
+
+  /* ================= SCREEN 2 — CHOICE ================= */
+  #screen2{ justify-content: center; padding: 24px; }
+  .choice-card{
+    background: var(--parchment);
+    color: var(--charcoal);
+    max-width: 440px; width: 100%;
+    padding: 44px 30px 36px;
+    border-radius: 4px;
+    position: relative;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    transform: rotate(0.6deg);
+  }
+  .choice-card .seal{ position: absolute; top: -24px; left: 50%; transform: translateX(-50%); }
+  .choice-card h2{
+    font-family: 'Itim', cursive;
+    font-size: clamp(1.6rem, 5.5vw, 2.1rem);
+    margin: 20px 0 6px;
+    color: #3a2635;
+  }
+  .choice-card .sub{
+    font-size: 0.85rem;
+    color: var(--charcoal);
+    opacity: 0.65;
+    margin-bottom: 30px;
+  }
+
+  .choice-row{
+    position: relative;
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    min-height: 130px;
+    align-items: flex-start;
+  }
+  .btn-outline{
+    background: transparent;
+    border: 1.5px solid var(--charcoal);
+    color: var(--charcoal);
+    opacity: 0.75;
+    position: relative;
+  }
+  #noBtn{ position: relative; }
+  #noBtn.roaming{ position: absolute; }
+
+  #dodgeText{
+    position: absolute;
+    bottom: -34px; left: 50%; transform: translateX(-50%);
+    font-family: 'Mali', cursive;
+    font-size: 0.85rem;
+    color: var(--blush);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    white-space: nowrap;
+  }
+  #dodgeText.show{ opacity: 1; }
+
+  /* ================= SCREEN 3 — CELEBRATION ================= */
+  #screen3{
+    justify-content: center; align-items: center;
+    text-align: center; padding: 30px;
+    position: relative;
+    overflow: hidden;
+  }
+  #screen3 .seal{ width: 78px; height: 78px; font-size: 1.4rem; margin-bottom: 22px; }
+  #screen3 .eyebrow{
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    color: var(--gold-soft);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  #screen3 h1{
+    font-family: 'Itim', cursive;
+    font-weight: 700;
+    font-size: clamp(1.9rem, 6.5vw, 3rem);
+    line-height: 1.55;
+    color: var(--cream-text);
+    max-width: 640px;
+    margin: 0;
+  }
+  #screen3 h1 .accent{ color: var(--gold-soft); }
+  #screen3 .footer-sig{
+    margin-top: 34px;
+    font-family: 'Mali', cursive;
+    font-size: 1rem;
+    color: rgba(246,236,224,0.6);
+  }
+
+  .heart{
+    position: fixed;
+    bottom: -40px;
+    font-size: 1.4rem;
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0.85;
+    animation: floatUp linear forwards;
+  }
+  @keyframes floatUp{
+    0%{ transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+    10%{ opacity: 0.9; }
+    100%{ transform: translateY(-108vh) translateX(var(--drift)) rotate(360deg); opacity: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation: none !important; transition: none !important; }
+  }
+
+  @media (max-width: 480px){
+    #board{ height: 68vh; min-height: 380px; }
+    .note{ font-size: 1rem; padding: 11px 16px; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- ================= SCREEN 1 ================= -->
+  <section class="screen active" id="screen1">
+    <div class="board-header">
+      <div class="seal"><span>ช</span>♥<span>ฟ</span></div>
+      <h1>แฟนคุณชื่ออะไร?</h1>
+      <p>หาชื่อที่ใช่ ท่ามกลางชื่อทั้งหมดที่กระจัดกระจายอยู่บนกระดานนี้</p>
+    </div>
+    <div id="board"></div>
+    <div id="hint" aria-live="polite"></div>
+  </section>
+
+  <!-- Reveal veil -->
+  <div class="letter-veil" id="letterVeil">
+    <div class="letter-card">
+      <div class="seal"><span>ช</span>♥<span>ฟ</span></div>
+      <p>คนนี้แหละ<br>คู่ชีวิตของฟ้าใสนะ</p>
+      <button class="btn btn-gold" id="toScreen2">หน้าถัดไป →</button>
+    </div>
+  </div>
+
+  <!-- ================= SCREEN 2 ================= -->
+  <section class="screen" id="screen2">
+    <div class="choice-card">
+      <div class="seal"><span>ช</span>♥<span>ฟ</span></div>
+      <h2>แล้วฟ้าใสจะไปต่อ<br>กับช้างไหม?</h2>
+      <p class="sub">เลือกได้เลยนะ...</p>
+      <div class="choice-row" id="choiceRow">
+        <button class="btn btn-gold" id="yesBtn">ไปต่อ 💌</button>
+        <button class="btn btn-outline" id="noBtn">ไม่ไปต่อ</button>
+        <span id="dodgeText"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SCREEN 3 ================= -->
+  <section class="screen" id="screen3">
+    <div class="seal"><span>ช</span>♥<span>ฟ</span></div>
+    <div class="eyebrow">ทางเลือกที่ถูกต้อง</div>
+    <h1>
+      นี่เป็นทางเลือกที่คุณเลือกถูกแล้ว<br>
+      สุขสันต์วันครบรอบ <span class="accent">2 ปี 3 เดือน</span>นะ<br>
+      ไปกันต่อนะ ฟ้าใสรักจุ๊ป 💕
+    </h1>
+    <div class="footer-sig">จากช้าง ถึงฟ้าใส</div>
+  </section>
+
+<script>
+  // ---------- Screen 1: scattered name board ----------
+  const NAMES = ["ต้น","บอล","เบียร์","กันต์","ปลื้ม","นนท์","เจมส์","ไนท์","บาส","ปอนด์","กอล์ฟ","ฟลุ๊ค","ไอซ์","ช้าง","ทีม","ปั้น"];
+  const CORRECT = "ช้าง";
+  const hintEl = document.getElementById('hint');
+  const board = document.getElementById('board');
+  let solved = false;
+
+  function shuffle(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]]=[a[j],a[i]];
+    }
+    return a;
+  }
+
+  function layoutBoard(){
+    board.innerHTML = '';
+    const order = shuffle(NAMES);
+    const rect = board.getBoundingClientRect();
+    const cols = window.innerWidth < 560 ? 3 : 4;
+    const rows = Math.ceil(order.length / cols);
+    const cellW = rect.width / cols;
+    const cellH = rect.height / rows;
+    const colorClasses = ['c1','c2','c3'];
+
+    order.forEach((name, idx) => {
+      const col = idx % cols;
+      const row = Math.floor(idx / cols);
+      const jitterX = (Math.random() - 0.5) * (cellW * 0.35);
+      const jitterY = (Math.random() - 0.5) * (cellH * 0.35);
+      const left = col * cellW + cellW/2 + jitterX;
+      const top = row * cellH + cellH/2 + jitterY;
+      const rot = (Math.random() * 16 - 8).toFixed(1);
+
+      const btn = document.createElement('button');
+      btn.className = 'note ' + colorClasses[idx % colorClasses.length];
+      btn.type = 'button';
+      btn.textContent = name;
+      btn.dataset.name = name;
+      btn.style.setProperty('--r', rot + 'deg');
+      btn.style.left = left + 'px';
+      btn.style.top = top + 'px';
+      btn.style.transform = 'translate(-50%, -50%) rotate(' + rot + 'deg)';
+
+      btn.addEventListener('click', () => handleNoteClick(btn, name));
+      board.appendChild(btn);
+    });
+  }
+
+  function handleNoteClick(btn, name){
+    if(solved) return;
+    if(name === CORRECT){
+      solved = true;
+      btn.classList.add('correct');
+      hintEl.textContent = 'เจอแล้ว! 🤍';
+      document.querySelectorAll('.note').forEach(n => {
+        if(n !== btn) n.classList.add('fade-out');
+      });
+      setTimeout(() => {
+        document.getElementById('letterVeil').classList.add('active');
+      }, 850);
+    } else {
+      btn.classList.remove('wrong-shake');
+      void btn.offsetWidth;
+      btn.classList.add('wrong-shake');
+      hintEl.textContent = 'อุ๊ปส์ ไม่ใช่คนนี้นะ ลองใหม่อีกที 🤎';
+    }
+  }
+
+  layoutBoard();
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    if(solved) return;
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(layoutBoard, 200);
+  });
+
+  // ---------- Transition: reveal -> screen 2 ----------
+  document.getElementById('toScreen2').addEventListener('click', () => {
+    document.getElementById('letterVeil').classList.remove('active');
+    document.getElementById('screen1').classList.remove('active');
+    document.getElementById('screen2').classList.add('active');
+  });
+
+  // ---------- Screen 2: choice + dodging "ไม่ไปต่อ" ----------
+  const noBtn = document.getElementById('noBtn');
+  const choiceRow = document.getElementById('choiceRow');
+  const dodgeText = document.getElementById('dodgeText');
+  const dodgePhrases = ["จะไม่ไปต่อจริงเหรอ?","ลองอีกทีสิ 🥺","ฟ้าใสต้องเลือกไปต่อสิ","จับไม่ได้หรอกก~","เลือก \"ไปต่อ\" เถอะนะ 💕"];
+
+  function dodge(){
+    const rowRect = choiceRow.getBoundingClientRect();
+    const btnRect = noBtn.getBoundingClientRect();
+    const maxX = Math.max(rowRect.width - btnRect.width, 0);
+    const maxY = Math.max(rowRect.height - btnRect.height, 0);
+    const newX = Math.random() * maxX;
+    const newY = Math.random() * maxY;
+    noBtn.classList.add('roaming');
+    noBtn.style.left = newX + 'px';
+    noBtn.style.top = newY + 'px';
+    dodgeText.textContent = dodgePhrases[Math.floor(Math.random()*dodgePhrases.length)];
+    dodgeText.classList.add('show');
+    clearTimeout(dodge._t);
+    dodge._t = setTimeout(() => dodgeText.classList.remove('show'), 1400);
+  }
+
+  noBtn.addEventListener('mouseenter', dodge);
+  noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); dodge(); }, {passive:false});
+  noBtn.addEventListener('click', (e) => { e.preventDefault(); dodge(); });
+
+  document.getElementById('yesBtn').addEventListener('click', () => {
+    document.getElementById('screen2').classList.remove('active');
+    const s3 = document.getElementById('screen3');
+    s3.classList.add('active');
+    startHearts();
+  });
+
+  // ---------- Screen 3: floating hearts ----------
+  const heartChars = ['💛','💕','🤎','✨'];
+  let heartTimer;
+  function spawnHeart(){
+    const h = document.createElement('div');
+    h.className = 'heart';
+    h.textContent = heartChars[Math.floor(Math.random()*heartChars.length)];
+    h.style.left = Math.random()*100 + 'vw';
+    h.style.setProperty('--drift', (Math.random()*80 - 40) + 'px');
+    h.style.animationDuration = (6 + Math.random()*4) + 's';
+    h.style.fontSize = (1 + Math.random()*1.2) + 'rem';
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), 11000);
+  }
+  function startHearts(){
+    spawnHeart();
+    heartTimer = setInterval(spawnHeart, 550);
+  }
+</script>
+</body>
+</html>
